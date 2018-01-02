@@ -34,7 +34,7 @@ stream.on('tweet', function (tweet) {
 	console.log(tweet.text);
 	async.waterfall([
 		function (callback) {
-			var category = '';
+			
 			const texts =  JSON.stringify({
                              "Inputs": {
                               "input1": [
@@ -47,7 +47,7 @@ stream.on('tweet', function (tweet) {
                                 "GlobalParameters": {}
 
                                });
-			var categorys = request({
+							var categorys = request({
                              url: 'https://asiasoutheast.services.azureml.net/subscriptions/7a38336d77ae429085b6d8af7c3b5eeb/services/659fde210c144dadba90d67bc22cb27a/execute?api-version=2.0&format=swagger', //URL to hit
                              method: 'POST',
                               headers: {
@@ -63,16 +63,17 @@ stream.on('tweet', function (tweet) {
                                       let bodies = JSON.parse(body);
                                       console.log(bodies);
                                       let cats = bodies.Results.output1;
+                                      var category_tweet = '';
                                        cats.forEach(function(category){
                                          //console.log(category['Scored Labels'] );
                                        if(category['Scored Labels'] === 'Negatif'){
-                                            category = "Negatif"
+                                            category_tweet = "Negatif"
                                          }else if(category['Scored Labels'] === 'Positif'){
-                                             category = "Positif"
+                                             category_tweet = "Positif"
                                          }
                                            // var saveWord = new words({text : response.data.words, date : today(), category : category });
                                               //         saveWord.save();
-                                             callback(null, category);
+                                             callback(null, category_tweet);
                                     });
                                 });
 			// axios.post('https://unikom-sentiment.herokuapp.com/api/v1/classify', {
@@ -99,7 +100,7 @@ stream.on('tweet', function (tweet) {
 			// 		console.log(error);
 			// 	});
 
-			callback(null, category);
+			// callback(null, category);
 		}
 	], function (err, result) {
 		var check = uji.find({ text: tweet.text }, (err, doc) => {
@@ -165,17 +166,17 @@ stream2.on('tweet', function (tweet) {
                                         //console.log(body);
                                       let bodies = JSON.parse(body);
                                       console.log(bodies);
-                                      let cats = bodies.Results.output1;
+                                      var category_tweet = '';
                                        cats.forEach(function(category){
                                          //console.log(category['Scored Labels'] );
                                        if(category['Scored Labels'] === 'Negatif'){
-                                            category = "Negatif"
+                                            category_tweet = "Negatif"
                                          }else if(category['Scored Labels'] === 'Positif'){
-                                             category = "Positif"
+                                             category_tweet = "Positif"
                                          }
                                            // var saveWord = new words({text : response.data.words, date : today(), category : category });
                                               //         saveWord.save();
-                                             callback(null, category);
+                                             callback(null, category_tweet);
                                     });
                                 });
 			// axios.post('https://unikom-sentiment.herokuapp.com/api/v1/classify', {

@@ -26,7 +26,7 @@ app.use(function (req, res, next) {
 });
 
 require('./app/services/fb');
-require('./app/services/instagram');
+// require('./app/services/instagram');
 require('./app/services/twitter');
 
 app.get('/', (req, res)=>{

@@ -4,7 +4,7 @@ const axios = require('axios');
 const async = require('async');
 const request = require('request');
 
-const iTag = require('instagram-tagscrape');
+const iTag = require('instagram-scraping');
 const uji = require('../model/datatest');
 const words = require('../model/datatests-preprocesseds');
 const ig = new Instagram('1139545080.04d35fb.6d32967626e040cabc8697ac27fc743c');
@@ -144,17 +144,17 @@ const cronIF = new CronJob({
 });
 
 const cronTag = new CronJob({
-  cronTime: '0 */50 * * * *',
+  cronTime: '0 * * * * *',
   onTick() {
     console.log("check fanspage ig tag unikom..")        
               async.waterfall([
                             function (callback) {
-                                 iTag.scrapeTagPage('unikom').then(function(res){
+                                 iTag.scrapeTag('unikom').then(function(res){
                                   // console.log(res);
-                                    (res.media).forEach((comment)=>{
+                                    (res.medias).forEach((comment)=>{
                                       async.waterfall([
                                         function(callback){
-                                            var check = uji.find({ text: comment.caption }, (err, doc) => {
+                                            var check = uji.find({ text: comment.text }, (err, doc) => {
                                                if (doc.length > 0) {
                                                   console.log("Already exist");
                                                 } else {
@@ -164,7 +164,7 @@ const cronTag = new CronJob({
                                                                "Inputs": {
                                                                   "input1": [
                                                                     {
-                                                                      "Tweet" : comment.caption,
+                                                                      "Tweet" : comment.text,
                                                                       "Label" : ""
                                                                     }
                                                                   ]
@@ -233,8 +233,8 @@ const cronTag = new CronJob({
                                                             var tanggal = today();
                                                             const data = {
                                                                     source: 'Instagram',
-                                                                    text: comment.caption,
-                                                                    foto: comment.display_src,
+                                                                    text: comment.text,
+                                                                    foto: comment.thumbnail,
                                                                     category: result,
                                                                     date : tanggal
                                                             }
@@ -268,91 +268,91 @@ const cronTag = new CronJob({
   timeZone: 'Asia/Jakarta',
 });
 
-const cronTag2 = new CronJob({
-  cronTime: '0 */59 * * * *',
-  onTick() {
-    console.log("check fanspage ig tag #unikombandung..")        
-              async.waterfall([
-                            function (callback) {
-                                 iTag.scrapeTagPage('unikombandung').then(function(res){
-                                  // console.log(res);
-                                    (res.media).forEach((comment)=>{
-                                      async.waterfall([
-                                        function(callback){
-                                            var check = uji.find({ text: comment.caption }, (err, doc) => {
-                                               if (doc.length > 0) {
-                                                  console.log("Already exist");
-                                                } else {
-                                                    var category = '';
-                                                                axios.post('https://unikom-sentiment.herokuapp.com/api/v1/classify', {
-                                                                    text: comment.caption
-                                                                }).then(function (response) {
-                                                                        if(response.data.status_code === 400){
-                                                                            axios.get('https://unikom-sentiment-analysis.herokuapp.com/api/v1/train').then().catch();
-                                                                            callback(null, null);
-                                                                        }
-                                                                        // console.log(response.data)
-                                                                        var hasil = (response.data).result;
-                                                                        if (hasil.length > 1) {
-                                                                            if (hasil[0][1] > hasil[1][1]) {
-                                                                                category = hasil[0][0]
-                                                                            } else {
-                                                                                category = hasil[1][0];
-                                                                            }
-                                                                        } else {
-                                                                            category = hasil[0][0];
-                                                                        }
-                                                                        console.log(response.data.words);
-                                                                        var saveWord = new words({text : response.data.words, date : today(), category : category });
-                                                                        saveWord.save();
-                                                                        callback(null, category);
-                                                                    })
-                                                                    .catch(function (error) {
-                                                                        console.log(error.response);
-                                                                    });
+// const cronTag2 = new CronJob({
+//   cronTime: '0 */59 * * * *',
+//   onTick() {
+//     console.log("check fanspage ig tag #unikombandung..")        
+//               async.waterfall([
+//                             function (callback) {
+//                                  iTag.scrapeTag('unikombandung').then(function(res){
+//                                   // console.log(res);
+//                                     (res.media).forEach((comment)=>{
+//                                       async.waterfall([
+//                                         function(callback){
+//                                             var check = uji.find({ text: comment.caption }, (err, doc) => {
+//                                                if (doc.length > 0) {
+//                                                   console.log("Already exist");
+//                                                 } else {
+//                                                     var category = '';
+//                                                                 axios.post('https://unikom-sentiment.herokuapp.com/api/v1/classify', {
+//                                                                     text: comment.caption
+//                                                                 }).then(function (response) {
+//                                                                         if(response.data.status_code === 400){
+//                                                                             axios.get('https://unikom-sentiment-analysis.herokuapp.com/api/v1/train').then().catch();
+//                                                                             callback(null, null);
+//                                                                         }
+//                                                                         // console.log(response.data)
+//                                                                         var hasil = (response.data).result;
+//                                                                         if (hasil.length > 1) {
+//                                                                             if (hasil[0][1] > hasil[1][1]) {
+//                                                                                 category = hasil[0][0]
+//                                                                             } else {
+//                                                                                 category = hasil[1][0];
+//                                                                             }
+//                                                                         } else {
+//                                                                             category = hasil[0][0];
+//                                                                         }
+//                                                                         console.log(response.data.words);
+//                                                                         var saveWord = new words({text : response.data.words, date : today(), category : category });
+//                                                                         saveWord.save();
+//                                                                         callback(null, category);
+//                                                                     })
+//                                                                     .catch(function (error) {
+//                                                                         console.log(error.response);
+//                                                                     });
 
-                                                }
-                                         }); 
+//                                                 }
+//                                          }); 
 
-                                        }
-                                      ],function(err, result){
-                                                        if(result !== null){
-                                                            var tanggal = today();
-                                                            const data = {
-                                                                    source: 'Instagram',
-                                                                    text: comment.caption,
-                                                                    foto: 'none.jpg',
-                                                                    category: result,
-                                                                    date : tanggal
-                                                                }
+//                                         }
+//                                       ],function(err, result){
+//                                                         if(result !== null){
+//                                                             var tanggal = today();
+//                                                             const data = {
+//                                                                     source: 'Instagram',
+//                                                                     text: comment.caption,
+//                                                                     foto: 'none.jpg',
+//                                                                     category: result,
+//                                                                     date : tanggal
+//                                                                 }
 
-                                                                var Train = new uji(data);
-                                                                Train.save((err) => {
-                                                                    if (err)
-                                                                        console.log(err);
+//                                                                 var Train = new uji(data);
+//                                                                 Train.save((err) => {
+//                                                                     if (err)
+//                                                                         console.log(err);
 
-                                                                    console.log("saved instagram");
-                                                                })
-                                                        }else{
-                                                            console.log("error");
-                                                        }
+//                                                                     console.log("saved instagram");
+//                                                                 })
+//                                                         }else{
+//                                                             console.log("error");
+//                                                         }
                                                         
-                                      });
+//                                       });
                                               
-                                    });
-                                });
+//                                     });
+//                                 });
 
-                            }
-                ], function (err, result) {
+//                             }
+//                 ], function (err, result) {
                                 
-                }); //end waterfall
-              // console.log(val.id)
+//                 }); //end waterfall
+//               // console.log(val.id)
        
-  },
+//   },
 
-  start: true,
-  timeZone: 'Asia/Jakarta',
-})
+//   start: true,
+//   timeZone: 'Asia/Jakarta',
+// })
 function calcTime() {
 
     var d = new Date();

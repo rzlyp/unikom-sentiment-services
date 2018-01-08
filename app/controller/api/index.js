@@ -1,7 +1,16 @@
 const async = require('async');
+var ig = require('instagram-tagscrape');
+
 const datatest = require('../../model/datatest');
 
 function Index(){
+    this.postSrcHashTag = (req, res, next) =>{
+
+        ig.scrapeTagPage('bernie').then(function(result){
+            console.dir(result);
+        })
+
+    }
     this.getSentiment = (req, res, next)=>{
         async.parallel({
             positif : (callback)=>{

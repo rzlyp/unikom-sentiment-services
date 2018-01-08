@@ -14,10 +14,10 @@ const uji = require('../model/datatest');
 fb.setAccessToken('1935709619975639|fKTU1R1DAHAALrnsDzc7r37n57U');
 
 const cronIF = new CronJob({
-  cronTime: '0 */50 * * * *',
+  cronTime: '0 */59 * * * *',
 
   onTick() {
-    console.log("check fanspage ..")
+    console.log("check fanspage unikom if..")
         fb.api("/165292613289/posts", (response)=> {
                 if (response && !response.error) {
                     // console.log(response);
@@ -35,7 +35,7 @@ const cronIF = new CronJob({
                                             (response.data).forEach((comment)=>{
                                                async.waterfall([
                                                    function (callback){
-                                                       var check = uji.find({ text: comment.message }, (err, doc) => {
+                                                       var check = uji.find({ "comment.comment": comment.message }, (err, doc) => {
                                                            if (doc.length > 0) {
                                                             console.log("Already exist");
                                                             } else {
@@ -123,10 +123,43 @@ const cronIF = new CronJob({
                                                ], function (err, result) {
                                                    if(result !== null){
                                                        console.log(annoucement);
-                                                            var check = uji.find({ text: comment.message }, (err, doc) => {
+                                                            var check = uji.find({ text: annoucement.text }, (err, doc) => {
 
                                                             if (doc.length > 0) {
                                                                 console.log("Already exist 2");
+                                                                var tanggal = today();
+                                                                  // if(comments.length > 0){
+                                                                  //   uji.findOneAndUpdate({_id : doc[0]._id}, {$set :{
+                                                                  //     date : today()
+                                                                  //    },
+                                                                  //    $push:{
+                                                                  //       comment : comments
+                                                                  //    }
+                                                                  //   }, (err, docs)=>{
+                                                                  //       if(err)
+                                                                  //           console.log(err)
+
+                                                                  //        console.log("updated facebook post"); 
+                                                                  //   })
+                                                                  // }
+                                                                  const data = {
+                                                                    source: 'Facebook',
+                                                                    text: annoucement.text,
+                                                                    foto_sender: 'none.jpg',
+                                                                    category: 'Positif',
+                                                                    date : tanggal,
+                                                                    commentCount : comments.length,
+                                                                    comment : comments
+                                                                }
+
+                                                                var Train = new uji(data);
+                                                                Train.save((err) => {
+                                                                    if (err)
+                                                                        console.log(err);
+
+                                                                    console.log("saved facebook");
+                                                                })
+                                                                 
                                                             } else {
                                                                 var tanggal = today();
                                                                 const data = {

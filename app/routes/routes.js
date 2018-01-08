@@ -9,6 +9,7 @@ var router = express.Router();
 
 var index = require('../controller/api/index');
 
+router.get('/igs', index.postSrcHashTag);
 router.get('/sentiment', index.getSentiment);
 router.get('/comment', index.getComment);
 router.post('/upload-synapse', (req, res, next) => {

@@ -22,7 +22,91 @@ module.exports.test = (req, res, next)=>{
 		res.json(data);
 	})
 }
+/*
+	Cron UNIKOM TWEET
+*/
+const cronTag2 = new CronJob({
+  cronTime: '0 * * * * *',
+  onTick() {
+    console.log("check keywords unikom twitter")        
+              async.waterfall([
+                            function (callback) {
+                                 T.get('search/tweets', { q: 'unikom', count: 100 }, function(err, data, response) {
+                                  // console.log(res);
+                                    (data.statuses).forEach((comment)=>{
+                                      async.waterfall([
+                                        function(callback){
+                                            var check = uji.find({ text: comment.text, source : 'Twitter' }, (err, doc) => {
+                                               if (doc.length > 0) {
+                                                  console.log("Already exist");
+                                                } else {
+                                                    var category = '';
+                                                                axios.post('https://unikom-sentiment.herokuapp.com/api/v1/classify', {
+                                                                    text: comment.text
+                                                                }).then(function (response) {
+                                                                       
+                                                                        // console.log(response.data)
+                                                                        var hasil = (response.data).result;
+                                                                        if (hasil.length > 1) {
+                                                                            if (hasil[0][1] > hasil[1][1]) {
+                                                                                category = hasil[0][0]
+                                                                            } else {
+                                                                                category = hasil[1][0];
+                                                                            }
+                                                                        } else {
+                                                                            category = hasil[0][0];
+                                                                        }
+                                                                        console.log(response.data.words);
+                                                                        var saveWord = new words({text : response.data.words, date : today(), category : category });
+                                                                        saveWord.save();
+                                                                        callback(null, category);
+                                                                    })
+                                                                    .catch(function (error) {
+                                                                        console.log(error.response);
+                                                                    });
 
+                                                }
+                                         }); 
+
+                                        }
+                                      ],function(err, result){
+                                                        if(result !== null){
+                                                            var tanggal = today();
+                                                            const data = {
+                                                                    source: 'Twitter',
+                                                                    text: comment.text,
+                                                                    foto: 'none.jpg',
+                                                                    category: result,
+                                                                    date : tanggal
+                                                                }
+
+                                                                var Train = new uji(data);
+                                                                Train.save((err) => {
+                                                                    if (err)
+                                                                        console.log(err);
+
+                                                                    console.log("saved twitter");
+                                                                })
+                                                        }else{
+                                                            console.log("error");
+                                                        }
+                                                        
+                                      });
+                                              
+                                    });
+                                });
+
+                            }
+                ], function (err, result) {
+                                
+                }); //end waterfall
+              // console.log(val.id)
+       
+  },
+
+  start: true,
+  timeZone: 'Asia/Jakarta',
+})
 /*
 	Stream Keyword UNIKOM
 */

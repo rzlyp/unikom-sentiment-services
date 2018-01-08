@@ -26,7 +26,7 @@ module.exports.test = (req, res, next)=>{
 	Cron UNIKOM TWEET
 */
 const cronTag2 = new CronJob({
-  cronTime: '0 * * * * *',
+  cronTime: '0 */59 * * * *',
   onTick() {
     console.log("check keywords unikom twitter")        
               async.waterfall([

@@ -25,9 +25,9 @@ app.use(function (req, res, next) {
     next();
 });
 
-require('./app/services/fb');
-// require('./app/services/instagram');
-require('./app/services/twitter');
+require('./app/services/v2/fb');
+require('./app/services/v2/instagram');
+require('./app/services/v2/twitter');
 
 app.get('/', (req, res)=>{
     res.send("Unikom Sentiment Services");

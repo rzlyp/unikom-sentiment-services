@@ -26,12 +26,12 @@ module.exports.test = (req, res, next)=>{
 	Cron UNIKOM TWEET
 */
 const cronTag2 = new CronJob({
-  cronTime: '0 */59 * * * *',
+  cronTime: '0 */56 * * * *',
   onTick() {
     console.log("check keywords unikom twitter")        
               async.waterfall([
                             function (callback) {
-                                 T.get('search/tweets', { q: 'unikom', count: 100 }, function(err, data, response) {
+                                 T.get('search/tweets', { q: 'unikom', count: 400 }, function(err, data, response) {
                                   // console.log(res);
                                     (data.statuses).forEach((comment)=>{
                                       async.waterfall([

@@ -144,7 +144,7 @@ const cronIF = new CronJob({
 });
 
 const cronTag = new CronJob({
-  cronTime: '0 * * * * *',
+  cronTime: '0 */50 * * * *',
   onTick() {
     console.log("check fanspage ig tag unikom..")        
               async.waterfall([

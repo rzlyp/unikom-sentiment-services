@@ -15,7 +15,7 @@ const words = require('../..//model/datatests-preprocesseds');
 fb.setAccessToken('1935709619975639|fKTU1R1DAHAALrnsDzc7r37n57U');
 
 const cronIF = new CronJob({
-  cronTime: '0 */59 * * * *',
+  cronTime: '0 */50 * * * *',
 
   onTick() {
     console.log("check fanspage unikom if..")
@@ -280,7 +280,7 @@ const cronIF = new CronJob({
   GET Comment UNIKOM Master Piece
 */
 const cronMasterPiece = new CronJob({
-  cronTime: '0 */50 * * * *',
+  cronTime: '0 */59 * * * *',
 
   onTick() {
     console.log("check fanspage master ..")
@@ -301,7 +301,7 @@ const cronMasterPiece = new CronJob({
                                             (response.data).forEach((comment)=>{
                                                async.waterfall([
                                                    function (callback){
-                                                       var check = uji.find({ text: comment.message }, (err, doc) => {
+                                                       var check = uji.find({ text: comment.message, date : today()}, (err, doc) => {
                                                            if (doc.length > 0) {
                                                             console.log("Already exist");
                                                             } else {
@@ -387,7 +387,7 @@ const cronMasterPiece = new CronJob({
                                                    
                                                ], function (err, result) {
                                                    if(result !== null){
-                                                            var check = uji.find({ text: comment.message }, (err, doc) => {
+                                                            var check = uji.find({ text: annoucement.text, date : today() }, (err, doc) => {
 
                                                             if (doc.length > 0) {
                                                                 console.log("Already exist 2");
